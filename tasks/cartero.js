@@ -81,7 +81,7 @@ module.exports = function(grunt) {
 
 				// sanity check: make sure url() contains a file path
 				if( fs.existsSync( pathRelativeToProjectDir ) ) {
-					return "url(" + "/" + path.relative( options.publicDir, pathRelativeToProjectDir ) + ")";
+					return "url("+ options.contextPath + "/" + path.relative( options.publicDir, pathRelativeToProjectDir ) + ")";
 				}
 				else {
 					return match;
@@ -303,7 +303,7 @@ module.exports = function(grunt) {
 
 		// When in prod mode, need to replace relative URLs in CSS files with absolute ones because CSS file location
 		// may change due to bundling.  This needs to happen before files are concatentated in buildParcelRegistry in prod mode.
-		if( mode === "prod" ) {
+		if( mode === "prod" || options.contextPath) {
 			grunt.task.run( kCarteroTaskPrefix + "replaceRelativeUrlsInCssFile" );
 		}
 
@@ -416,6 +416,7 @@ module.exports = function(grunt) {
 	function applyDefaultsAndNormalize( options ) {
 		options.projectDir = _s.rtrim( options.projectDir, "/" );
 		options.publicDir = _s.rtrim( options.publicDir, "/" );
+		options.contextPath = options.contextPath || "";
 		options.library = options.library || [];
 
 		options.watch = ! _.isUndefined( grunt.option( "watch" ) );
@@ -711,6 +712,7 @@ module.exports = function(grunt) {
 		var carteroJson = {};
 
 		carteroJson.publicDir = options.publicDir;
+		carteroJson.contextPath = options.contextPath;
 		carteroJson.parcels = parcelDataToSave;
 
 		fs.writeFileSync( path.join( options.projectDir, kCarteroJsonFile ), JSON.stringify( carteroJson, null, "\t" ) );
@@ -883,7 +885,7 @@ module.exports = function(grunt) {
 					}
 
 					resolvedRequire = resolvedRequire.replace( /.js$/,"" ) + ".js";
-		
+
 					if( ! fs.existsSync( resolvedRequire ) ) {
 						hasBadRequire = true;
 						badRequire = resolvedRequire;
