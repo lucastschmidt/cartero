@@ -711,6 +711,7 @@ module.exports = function(grunt) {
 
 		var carteroJson = {};
 
+		carteroJson.projectDir = options.projectDir;
 		carteroJson.publicDir = options.publicDir;
 		carteroJson.contextPath = options.contextPath;
 		carteroJson.parcels = parcelDataToSave;
